@@ -1,0 +1,1 @@
+claude -p "/project:classify-comfyui-issues --resume"
