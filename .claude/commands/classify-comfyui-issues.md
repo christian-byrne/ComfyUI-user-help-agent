@@ -19,35 +19,48 @@ Reference these sources when needed for context and classification:
 </knowledge_sources>
 
 <classification_framework>
-Classify issues into these categories based on the most helpful response strategy:
+Classify issues into these response-based categories that optimize for response effectiveness:
 
-**user_error**: Common mistakes or misconfigurations
-- Optimal response: Step-by-step troubleshooting with documentation links
-- Indicators: "doesn't work", missing system info, basic setup issues
+**needs_information**: Issues requiring more details before resolution
+- Subcategories:
+  - `missing_reproduction_steps`: "Please provide step-by-step reproduction"
+  - `missing_system_info`: "Please provide system specs, OS, GPU info"  
+  - `missing_error_logs`: "Please provide complete error logs and stack traces"
+- Indicators: Vague descriptions, partial information, empty issue templates
 
-**feature_request_invalid**: Requests that conflict with ComfyUI's design philosophy  
-- Optimal response: Diplomatic explanation with alternative approaches
-- Indicators: Requests for UI simplification, workflow changes that break modularity
+**needs_guidance**: Educational/tutorial responses for users seeking help
+- Subcategories:
+  - `configuration_help`: "Here's how to configure X setting"
+  - `workflow_tutorial`: "Step-by-step workflow guide with examples"
+  - `installation_guide`: "Installation instructions for your setup"
+- Indicators: "How do I...", "Can ComfyUI...", setup questions
 
-**how_to**: Users seeking guidance on accomplishing tasks
-- Optimal response: Friendly tutorial with examples and resource links
-- Indicators: "How do I...", "Can ComfyUI...", specific workflow questions
+**needs_technical_review**: Issues requiring developer investigation or evaluation
+- Subcategories:
+  - `bug_investigation`: "Technical debugging and investigation needed"
+  - `performance_analysis`: "Performance impact assessment required"
+  - `feature_evaluation`: "Technical feasibility and design review"
+- Indicators: Complex technical issues, enhancement proposals, optimization requests
 
-**insufficient_info**: Issues lacking context for resolution
-- Optimal response: Polite request for details with helpful template
-- Indicators: Vague descriptions, missing error logs, no reproduction steps
+**needs_clarification**: Issues requiring scope/requirement clarification  
+- Subcategories:
+  - `vague_feature_request`: "Please specify requirements and use cases"
+  - `unclear_problem_statement`: "Please clarify the exact problem"
+- Indicators: Ambiguous requests, missing context, unclear goals
 
-**bug_report**: Legitimate technical issues with clear reproduction
-- Optimal response: Technical acknowledgment and debugging steps
-- Indicators: Specific error messages, clear steps to reproduce, system details
+**needs_redirection**: Issues that should be handled elsewhere
+- Subcategories:
+  - `already_fixed`: "This was already resolved in version X"
+  - `wrong_repository`: "Please report this to the correct repository"
+  - `community_discussion`: "This belongs in discussions/Discord/Reddit"
+- Indicators: Resolved issues, appreciation posts, off-topic discussions
 
-**feature_request_valid**: Reasonable enhancement requests aligned with ComfyUI goals
-- Optimal response: Acknowledgment and implementation discussion
-- Indicators: Performance improvements, accessibility features, developer tools
-
-**duplicate**: Issues repeating existing reports
-- Optimal response: Link to original with explanation
-- Indicators: Similar symptoms to existing open issues
+**needs_troubleshooting**: Step-by-step problem resolution for user errors
+- Subcategories:
+  - `configuration_error`: "Fix configuration settings step-by-step"
+  - `dependency_issue`: "Resolve dependency conflicts or installation"
+  - `user_mistake`: "Common mistake with standard resolution"
+- Indicators: Common errors, setup problems, misconfigurations
 </classification_framework>
 
 <examples>
@@ -55,8 +68,9 @@ Classify issues into these categories based on the most helpful response strateg
 Issue: "ComfyUI crashes when I load my workflow"
 Body: "Help! It just stops working!"
 
-Classification: insufficient_info
-Reasoning: No error details, system info, or workflow provided
+Response Category: needs_information
+Response Subcategory: missing_error_logs
+Reasoning: No error details, system info, or workflow provided - need complete diagnostic information
 Optimal Response: "To help debug this crash, please provide: 1) Your system specs, 2) The specific workflow file, 3) Any error messages in console, 4) Steps to reproduce"
 Confidence: 0.9
 </example>
@@ -65,9 +79,10 @@ Confidence: 0.9
 Issue: "Add a 'Simple Mode' that hides the node interface"
 Body: "New users find nodes confusing. Please add a simple UI mode."
 
-Classification: feature_request_invalid  
-Reasoning: Conflicts with ComfyUI's core philosophy of node-based workflows
-Optimal Response: "ComfyUI's strength is its node-based approach for maximum flexibility. For simplified workflows, consider using ComfyUI-Manager's workflow templates or building custom UIs on top of ComfyUI's API."
+Response Category: needs_redirection
+Response Subcategory: community_discussion  
+Reasoning: Conflicts with ComfyUI's core philosophy - better suited for feature discussion forums
+Optimal Response: "ComfyUI's strength is its node-based approach for maximum flexibility. For simplified workflows, consider using ComfyUI-Manager's workflow templates or building custom UIs on top of ComfyUI's API. This type of design discussion would be great for the community Discord/Reddit."
 Confidence: 0.95
 </example>
 
@@ -75,8 +90,9 @@ Confidence: 0.95
 Issue: "How to use ControlNet with img2img?"
 Body: "I have Stable Diffusion working but can't figure out ControlNet integration"
 
-Classification: how_to
-Reasoning: Clear educational request with specific technical focus
+Response Category: needs_guidance
+Response Subcategory: workflow_tutorial
+Reasoning: Clear educational request with specific technical focus - needs step-by-step tutorial
 Optimal Response: "Here's a step-by-step guide: [workflow example + links to ControlNet documentation]. Also check out these community workflows: [links]"
 Confidence: 0.9
 </example>
@@ -114,15 +130,16 @@ For each classified issue, output exactly this format:
 
 ```
 Issue #[NUMBER]: [TITLE]
-Classification: [CATEGORY]
+Response Category: [PRIMARY_CATEGORY]
+Response Subcategory: [SUBCATEGORY]
 Confidence: [0.0-1.0]
-Reasoning: [WHY this classification was chosen]
+Reasoning: [WHY this response strategy was chosen]
 Key Indicators: [SPECIFIC patterns that led to decision]
 Optimal Response: [RECOMMENDED response strategy]
 ```
 
 <analysis>
-[Your detailed thinking about the classification decision]
+[Your detailed thinking about the response strategy decision]
 </analysis>
 </output_format>
 
@@ -145,7 +162,9 @@ CREATE TABLE IF NOT EXISTS issues (
 CREATE TABLE IF NOT EXISTS classifications (
     issue_number INTEGER PRIMARY KEY,
     classification_type TEXT,
-    optimal_response_strategy TEXT,
+    response_category TEXT,
+    response_subcategory TEXT,
+    optimal_response TEXT,
     confidence_score REAL,
     reasoning TEXT,
     key_indicators TEXT,

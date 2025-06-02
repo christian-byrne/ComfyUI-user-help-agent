@@ -29,18 +29,20 @@ CREATE TABLE IF NOT EXISTS comments (
     FOREIGN KEY (issue_number) REFERENCES issues(number)
 );
 
--- Classification results
+-- Classification results with response-based categorization
 CREATE TABLE IF NOT EXISTS classifications (
     id INTEGER PRIMARY KEY,
     issue_number INTEGER,
-    classification_type TEXT, -- 'user_error', 'feature_request_invalid', 'how_to', 'insufficient_info', 'bug_report', 'feature_request_valid', etc.
+    classification_type TEXT, -- Legacy field: 'user_error', 'feature_request_invalid', etc.
+    response_category TEXT, -- New: 'needs_information', 'needs_guidance', 'needs_technical_review', etc.
+    response_subcategory TEXT, -- New: 'missing_error_logs', 'workflow_tutorial', 'bug_investigation', etc.
     optimal_response TEXT, -- The recommended response strategy
     confidence_score REAL, -- 0.0 to 1.0
-    reasoning TEXT, -- Why this classification was chosen
+    reasoning TEXT, -- Why this response strategy was chosen
     key_indicators TEXT, -- What patterns led to this classification
     similar_issues TEXT, -- JSON array of similar issue numbers
     last_updated TEXT DEFAULT CURRENT_TIMESTAMP,
-    classification_version INTEGER DEFAULT 1,
+    classification_version INTEGER DEFAULT 2, -- Incremented for response-based system
     FOREIGN KEY (issue_number) REFERENCES issues(number)
 );
 
